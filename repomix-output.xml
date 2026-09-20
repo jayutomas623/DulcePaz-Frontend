@@ -1,0 +1,910 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+app/
+  favicon.ico
+  globals.css
+  layout.tsx
+  page.tsx
+components/
+  Footer.tsx
+  Navbar.tsx
+lib/
+  mock-data.ts
+public/
+  file.svg
+  globe.svg
+  next.svg
+  vercel.svg
+  window.svg
+types/
+  index.ts
+.gitignore
+AGENTS.md
+CLAUDE.md
+eslint.config.mjs
+globals.css
+next.config.ts
+package.json
+postcss.config.mjs
+README.md
+tailwind.config.ts
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="app/globals.css">
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+</file>
+
+<file path="app/page.tsx">
+import Image from "next/image";
+
+export default function Home() {
+  return (
+    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+        <Image
+          className="dark:invert h-5 w-[100px]"
+          src="/next.svg"
+          alt="Next.js logo"
+          width={100}
+          height={20}
+          priority
+        />
+        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
+          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
+            To get started, edit the{" "}
+            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
+              page.tsx
+            </code>{" "}
+            file.
+          </h1>
+          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+            Looking for a starting point or more instructions? Head over to{" "}
+            <a
+              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              className="font-medium text-zinc-950 dark:text-zinc-50"
+            >
+              Templates
+            </a>{" "}
+            or the{" "}
+            <a
+              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              className="font-medium text-zinc-950 dark:text-zinc-50"
+            >
+              Learning
+            </a>{" "}
+            center.
+          </p>
+        </div>
+        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+          <a
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
+            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              className="dark:invert h-[14px] w-4"
+              src="/vercel.svg"
+              alt="Vercel logomark"
+              width={16}
+              height={14}
+            />
+            Deploy Now
+          </a>
+          <a
+            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
+            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Documentation
+          </a>
+        </div>
+      </main>
+    </div>
+  );
+}
+</file>
+
+<file path="components/Footer.tsx">
+import Link from "next/link";
+import { MapPin, Phone, Mail, Instagram } from "lucide-react";
+
+export default function Footer() {
+  return (
+    <footer className="bg-[#883F9B] text-white pt-16 pb-12 border-t border-[#B2BFEB]/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+          {/* Info */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white text-[#883F9B] flex items-center justify-center font-bold">
+                DP
+              </div>
+              <span className="text-xl font-bold tracking-tight">Dulce Paz</span>
+            </div>
+            <p className="text-[#F7F7E8]/80 text-sm leading-relaxed">
+              Centro de salud mental y bienestar integral enfocado en terapia humana, accesible y basada en evidencia científica en La Paz, Bolivia.
+            </p>
+            <p className="text-xs text-[#A56A2E] bg-[#F7F7E8] px-3 py-1.5 rounded-md inline-block font-semibold">
+              “Comprendernos mejor también es parte del proceso de sentirnos mejor.”
+            </p>
+          </div>
+
+          {/* Navegación */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-[#BD93C6] mb-4">
+              Navegación
+            </h4>
+            <ul className="space-y-2.5 text-sm text-[#F7F7E8]/90">
+              <li><Link href="/" className="hover:underline">Inicio</Link></li>
+              <li><Link href="/servicios" className="hover:underline">Servicios</Link></li>
+              <li><Link href="/nosotros" className="hover:underline">Quiénes Somos</Link></li>
+              <li><Link href="/contacto" className="hover:underline">Contacto y Ubicación</Link></li>
+              <li><Link href="/agendar" className="hover:underline">Agendar Cita</Link></li>
+            </ul>
+          </div>
+
+          {/* Contacto */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-[#BD93C6] mb-4">
+              Contacto & Ubicación
+            </h4>
+            <ul className="space-y-3 text-sm text-[#F7F7E8]/90">
+              <li className="flex items-start gap-2.5">
+                <MapPin className="w-4 h-4 text-[#BD93C6] shrink-0 mt-0.5" />
+                <span>Calle 15 de Calacoto, Edificio Parque, La Paz, Bolivia</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Phone className="w-4 h-4 text-[#BD93C6] shrink-0" />
+                <a href="https://wa.me/59176543210" target="_blank" className="hover:underline">+591 76543210</a>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Mail className="w-4 h-4 text-[#BD93C6] shrink-0" />
+                <span>contacto@dulcepaz.com</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Redes */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-[#BD93C6] mb-4">
+              Síguenos
+            </h4>
+            <div className="flex gap-3 text-[#F7F7E8]">
+              <a
+                href="https://instagram.com/dulcepaz.psi"
+                target="_blank"
+                rel="noreferrer"
+                className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center hover:bg-[#2A8ED1] transition-colors"
+                aria-label="Instagram"
+              >
+                <Instagram className="w-5 h-5" />
+              </a>
+            </div>
+            <div className="mt-6">
+              <span className="text-xs text-[#BD93C6] block">Horarios de atención:</span>
+              <span className="text-xs text-[#F7F7E8]/80 block">Lun - Vie: 09:00 - 19:00</span>
+              <span className="text-xs text-[#F7F7E8]/80 block">Sáb: 09:00 - 13:00</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Barra inferior */}
+        <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-[#F7F7E8]/60 gap-4">
+          <p>© 2026 Dulce Paz - Psicología y Salud Mental. Todos los derechos reservados.</p>
+          <div className="flex gap-6">
+            <Link href="/privacidad" className="hover:underline">Políticas de Privacidad</Link>
+            <Link href="/terminos" className="hover:underline">Términos del Servicio</Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+</file>
+
+<file path="components/Navbar.tsx">
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { MessageCircle, Menu, X } from "lucide-react";
+
+export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <header className="sticky top-0 z-50 bg-[#F7F7E8]/90 backdrop-blur-md border-b border-[#B2BFEB]/40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        {/* Logotipo */}
+        <Link href="/" className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#883F9B] flex items-center justify-center text-white font-bold text-xl shadow-sm">
+            DP
+          </div>
+          <div>
+            <span className="text-xl font-bold text-[#883F9B] tracking-tight block leading-none">
+              Dulce Paz
+            </span>
+            <span className="text-[10px] uppercase font-medium tracking-widest text-[#A56A2E] mt-1 block">
+              Psicología y Salud Mental
+            </span>
+          </div>
+        </Link>
+
+        {/* Enlaces Escritorio */}
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-700">
+          <Link href="/" className="hover:text-[#883F9B] transition-colors">
+            Inicio
+          </Link>
+          <Link href="/servicios" className="hover:text-[#883F9B] transition-colors">
+            Servicios
+          </Link>
+          <Link href="/nosotros" className="hover:text-[#883F9B] transition-colors">
+            Quiénes Somos
+          </Link>
+          <Link href="/contacto" className="hover:text-[#883F9B] transition-colors">
+            Contacto
+          </Link>
+        </nav>
+
+        {/* CTA + Selector Idioma */}
+        <div className="hidden md:flex items-center gap-4">
+          <span className="text-xs font-semibold px-2 py-1 rounded bg-[#B2BFEB]/30 text-[#883F9B]">
+            ES
+          </span>
+          <Link
+            href="/agendar"
+            className="bg-[#2A8ED1] hover:bg-[#883F9B] text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition-all shadow-sm hover:shadow-md flex items-center gap-2"
+          >
+            Agendar Cita
+          </Link>
+        </div>
+
+        {/* Botón Móvil */}
+        <div className="md:hidden flex items-center gap-2">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-2 text-[#883F9B]"
+            aria-label="Menu"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Menú Desplegable Móvil */}
+      {isOpen && (
+        <div className="md:hidden bg-[#F7F7E8] border-b border-[#B2BFEB] px-4 pt-2 pb-6 space-y-3">
+          <Link
+            href="/"
+            onClick={() => setIsOpen(false)}
+            className="block py-2 text-gray-800 font-medium"
+          >
+            Inicio
+          </Link>
+          <Link
+            href="/servicios"
+            onClick={() => setIsOpen(false)}
+            className="block py-2 text-gray-800 font-medium"
+          >
+            Servicios
+          </Link>
+          <Link
+            href="/nosotros"
+            onClick={() => setIsOpen(false)}
+            className="block py-2 text-gray-800 font-medium"
+          >
+            Quiénes Somos
+          </Link>
+          <Link
+            href="/contacto"
+            onClick={() => setIsOpen(false)}
+            className="block py-2 text-gray-800 font-medium"
+          >
+            Contacto
+          </Link>
+          <Link
+            href="/agendar"
+            onClick={() => setIsOpen(false)}
+            className="block w-full text-center bg-[#2A8ED1] text-white py-3 rounded-xl font-semibold"
+          >
+            Agendar Cita
+          </Link>
+        </div>
+      )}
+    </header>
+  );
+}
+</file>
+
+<file path="lib/mock-data.ts">
+import { Service, Therapist, DaySchedule } from "@/types";
+
+export const SERVICES_DATA: Service[] = [
+  {
+    id: "individual",
+    title: "Psicoterapia Individual",
+    shortDesc: "Espacio personal para trabajar en tu regulación emocional y autoconocimiento.",
+    fullDesc: "Brindamos psicoterapia individualizada con bases científicas (TCC y Sistémica). Te acompañamos en procesos de superación del duelo, regulación de ansiedad, sintomatología depresiva y estrés cotidiano.",
+    focus: ["Regulación emocional", "Ansiedad y depresión", "Duelo y transiciones"],
+    targetAudience: "Personas adultas y jóvenes",
+    iconName: "User",
+  },
+  {
+    id: "pareja",
+    title: "Terapia de Pareja",
+    shortDesc: "Mejora la comunicación y fortalece el vínculo afectivo mutuo.",
+    fullDesc: "Herramientas eficaces para optimizar canales de comunicación, resolver desacuerdos de convivencia, sanar heridas afectivas y mediar en dinámicas de parejas interculturales.",
+    focus: ["Comunicación asertiva", "Parejas interculturales", "Acuerdos vinculares"],
+    targetAudience: "Parejas en cualquier etapa de su relación",
+    iconName: "HeartHandshake",
+  },
+  {
+    id: "familiar",
+    title: "Terapia Familiar",
+    shortDesc: "Acompañamiento sistémico para transformar dinámicas y tensiones del hogar.",
+    fullDesc: "Acompañamiento a todos los miembros del hogar para equilibrar dinámicas de comunicación, gestionar transiciones complejas, límites y resolver tensiones intergeneracionales.",
+    focus: ["Límites saludables", "Mediación en crisis", "Dinámicas relacionales"],
+    targetAudience: "Familias nucleares, extensas o reconstituidas",
+    iconName: "Users",
+  },
+  {
+    id: "vocacional",
+    title: "Orientación Vocacional",
+    shortDesc: "Pruebas psicométricas e identificación clara de aptitudes e intereses.",
+    fullDesc: "Destinado a jóvenes y adultos en procesos de elección de carrera. Descubre tus fortalezas y aptitudes con evaluaciones confiables y asesoramiento psicopedagógico experto.",
+    focus: ["Batería de tests psicométricos", "Proyecto de vida", "Elección de carrera"],
+    targetAudience: "Estudiantes de colegio terminal, universitarios y adultos",
+    iconName: "Compass",
+  },
+  {
+    id: "adolescentes",
+    title: "Terapia para Adolescentes (13+)",
+    shortDesc: "Contención empática para transitar los cambios propios de la pubertad.",
+    fullDesc: "Entorno empático de contención y orientación para transitar de forma adaptativa los retos de la adolescencia, desarrollo de identidad, autoestima y dinámicas escolares.",
+    focus: ["Gestión de identidad", "Autoestima", "Presión académica y social"],
+    targetAudience: "Adolescentes a partir de los 13 años",
+    iconName: "Smile",
+  },
+  {
+    id: "organizacional",
+    title: "Psicología Organizacional",
+    shortDesc: "Optimización del clima laboral, bienestar y selección estratégica.",
+    fullDesc: "Apoyamos el crecimiento saludable de empresas en Bolivia. Programas de diagnóstico de clima laboral, reclutamiento ético y programas de salud mental corporativa.",
+    focus: ["Clima y salud laboral", "Prevención de burnout", "Talleres de liderazgo"],
+    targetAudience: "Instituciones, medianas y grandes empresas",
+    iconName: "Building2",
+  },
+  {
+    id: "talleres",
+    title: "Psicoeducación (Talleres y Espacios de Escucha)",
+    shortDesc: "Espacios grupales y reflexivos abiertos a la comunidad.",
+    fullDesc: "Encuentros interactivos dedicados a transferir herramientas preventivas. Incluye los Espacios de Escucha mensuales sobre dependencia emocional y reconstrucción personal.",
+    focus: ["Espacios de Escucha", "Dependencia emocional", "Gestión del estrés"],
+    targetAudience: "Público general e instituciones",
+    iconName: "CalendarDays",
+  },
+];
+
+export const THERAPISTS_DATA: Therapist[] = [
+  {
+    id: "nikki-paz",
+    name: "Lic. Nikki Paz",
+    role: "Coordinadora General / Psicóloga Clínica",
+    specialty: "Terapia de pareja, ansiedad, duelo y terapia intercultural bilingüe (Español/Inglés)",
+    quote: "Nuestra prioridad es guiarte hacia un espacio de paz interna en medio de las complejidades cotidianas de la vida.",
+    servicesOffered: ["individual", "pareja", "familiar", "talleres"],
+    avatarUrl: "/team/nikki.jpg",
+  },
+  {
+    id: "keila-vilar",
+    name: "Lic. Keila Vilar",
+    role: "Especialista Psicopedagógica",
+    specialty: "Acompañamiento infanto-juvenil, hábitos de estudio y orientación vocacional",
+    quote: "El aprendizaje florece cuando las niñas, niños y jóvenes se sienten escuchados, validados y acompañados con paciencia.",
+    servicesOffered: ["vocacional", "adolescentes", "talleres"],
+    avatarUrl: "/team/keila.jpg",
+  },
+  {
+    id: "william-mendoza",
+    name: "Lic. William Mendoza",
+    role: "Psicólogo Organizacional",
+    specialty: "Salud ocupacional, clima corporativo, consultoría y selección de talento",
+    quote: "Organizaciones sanas y humanas logran resultados extraordinarios y sostenibles en el tiempo.",
+    servicesOffered: ["organizacional", "talleres"],
+    avatarUrl: "/team/william.jpg",
+  },
+];
+
+// Generador de horarios para los próximos 14 días (Zona horaria Bolivia GMT-4)
+export const MOCK_SCHEDULES: DaySchedule[] = Array.from({ length: 14 }, (_, i) => {
+  const d = new Date();
+  d.setDate(d.getDate() + i + 1);
+  const dateStr = d.toISOString().split("T")[0];
+  const isWeekend = d.getDay() === 0; // Domingo cerrado
+
+  return {
+    date: dateStr,
+    slots: isWeekend
+      ? []
+      : [
+          { time: "09:00", isAvailable: true },
+          { time: "10:30", isAvailable: i % 2 === 0 },
+          { time: "12:00", isAvailable: false }, // Ocupado
+          { time: "14:30", isAvailable: true },
+          { time: "16:00", isAvailable: true },
+          { time: "17:30", isAvailable: i % 3 !== 0 },
+        ],
+  };
+});
+
+export const FAQS_DATA = [
+  {
+    q: "¿Cuánto dura una sesión psicoterapéutica?",
+    a: "Cada sesión estándar tiene una duración de 50 a 60 minutos, permitiendo abordar con profundidad y calma cada motivo de consulta.",
+  },
+  {
+    q: "¿Cómo se confirma mi cita?",
+    a: "Al completar el formulario web de reserva, el sistema genera tu cita y envía un comprobante inmediato por correo y WhatsApp con todos los detalles.",
+  },
+  {
+    q: "¿Qué pasa si necesito cancelar o reprogramar?",
+    a: "Te solicitamos avisar con al menos 24 horas de anticipación para que podamos reasignar ese espacio a otra persona en lista de espera.",
+  },
+  {
+    q: "¿Atienden a personas que residen fuera de Bolivia?",
+    a: "Sí. A través de nuestra modalidad virtual brindamos terapia en español e inglés a pacientes en cualquier país mediante enlaces seguros de Google Meet.",
+  },
+];
+</file>
+
+<file path="public/file.svg">
+<svg fill="none" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 13.5V5.41a1 1 0 0 0-.3-.7L9.8.29A1 1 0 0 0 9.08 0H1.5v13.5A2.5 2.5 0 0 0 4 16h8a2.5 2.5 0 0 0 2.5-2.5m-1.5 0v-7H8v-5H3v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1M9.5 5V2.12L12.38 5zM5.13 5h-.62v1.25h2.12V5zm-.62 3h7.12v1.25H4.5zm.62 3h-.62v1.25h7.12V11z" clip-rule="evenodd" fill="#666" fill-rule="evenodd"/></svg>
+</file>
+
+<file path="public/globe.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><g clip-path="url(#a)"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.27 14.1a6.5 6.5 0 0 0 3.67-3.45q-1.24.21-2.7.34-.31 1.83-.97 3.1M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m.48-1.52a7 7 0 0 1-.96 0H7.5a4 4 0 0 1-.84-1.32q-.38-.89-.63-2.08a40 40 0 0 0 3.92 0q-.25 1.2-.63 2.08a4 4 0 0 1-.84 1.31zm2.94-4.76q1.66-.15 2.95-.43a7 7 0 0 0 0-2.58q-1.3-.27-2.95-.43a18 18 0 0 1 0 3.44m-1.27-3.54a17 17 0 0 1 0 3.64 39 39 0 0 1-4.3 0 17 17 0 0 1 0-3.64 39 39 0 0 1 4.3 0m1.1-1.17q1.45.13 2.69.34a6.5 6.5 0 0 0-3.67-3.44q.65 1.26.98 3.1M8.48 1.5l.01.02q.41.37.84 1.31.38.89.63 2.08a40 40 0 0 0-3.92 0q.25-1.2.63-2.08a4 4 0 0 1 .85-1.32 7 7 0 0 1 .96 0m-2.75.4a6.5 6.5 0 0 0-3.67 3.44 29 29 0 0 1 2.7-.34q.31-1.83.97-3.1M4.58 6.28q-1.66.16-2.95.43a7 7 0 0 0 0 2.58q1.3.27 2.95.43a18 18 0 0 1 0-3.44m.17 4.71q-1.45-.12-2.69-.34a6.5 6.5 0 0 0 3.67 3.44q-.65-1.27-.98-3.1" fill="#666"/></g><defs><clipPath id="a"><path fill="#fff" d="M0 0h16v16H0z"/></clipPath></defs></svg>
+</file>
+
+<file path="public/next.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 394 80"><path fill="#000" d="M262 0h68.5v12.7h-27.2v66.6h-13.6V12.7H262V0ZM149 0v12.7H94v20.4h44.3v12.6H94v21h55v12.6H80.5V0h68.7zm34.3 0h-17.8l63.8 79.4h17.9l-32-39.7 32-39.6h-17.9l-23 28.6-23-28.6zm18.3 56.7-9-11-27.1 33.7h17.8l18.3-22.7z"/><path fill="#000" d="M81 79.3 17 0H0v79.3h13.6V17l50.2 62.3H81Zm252.6-.4c-1 0-1.8-.4-2.5-1s-1.1-1.6-1.1-2.6.3-1.8 1-2.5 1.6-1 2.6-1 1.8.3 2.5 1a3.4 3.4 0 0 1 .6 4.3 3.7 3.7 0 0 1-3 1.8zm23.2-33.5h6v23.3c0 2.1-.4 4-1.3 5.5a9.1 9.1 0 0 1-3.8 3.5c-1.6.8-3.5 1.3-5.7 1.3-2 0-3.7-.4-5.3-1s-2.8-1.8-3.7-3.2c-.9-1.3-1.4-3-1.4-5h6c.1.8.3 1.6.7 2.2s1 1.2 1.6 1.5c.7.4 1.5.5 2.4.5 1 0 1.8-.2 2.4-.6a4 4 0 0 0 1.6-1.8c.3-.8.5-1.8.5-3V45.5zm30.9 9.1a4.4 4.4 0 0 0-2-3.3 7.5 7.5 0 0 0-4.3-1.1c-1.3 0-2.4.2-3.3.5-.9.4-1.6 1-2 1.6a3.5 3.5 0 0 0-.3 4c.3.5.7.9 1.3 1.2l1.8 1 2 .5 3.2.8c1.3.3 2.5.7 3.7 1.2a13 13 0 0 1 3.2 1.8 8.1 8.1 0 0 1 3 6.5c0 2-.5 3.7-1.5 5.1a10 10 0 0 1-4.4 3.5c-1.8.8-4.1 1.2-6.8 1.2-2.6 0-4.9-.4-6.8-1.2-2-.8-3.4-2-4.5-3.5a10 10 0 0 1-1.7-5.6h6a5 5 0 0 0 3.5 4.6c1 .4 2.2.6 3.4.6 1.3 0 2.5-.2 3.5-.6 1-.4 1.8-1 2.4-1.7a4 4 0 0 0 .8-2.4c0-.9-.2-1.6-.7-2.2a11 11 0 0 0-2.1-1.4l-3.2-1-3.8-1c-2.8-.7-5-1.7-6.6-3.2a7.2 7.2 0 0 1-2.4-5.7 8 8 0 0 1 1.7-5 10 10 0 0 1 4.3-3.5c2-.8 4-1.2 6.4-1.2 2.3 0 4.4.4 6.2 1.2 1.8.8 3.2 2 4.3 3.4 1 1.4 1.5 3 1.5 5h-5.8z"/></svg>
+</file>
+
+<file path="public/vercel.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+</file>
+
+<file path="public/window.svg">
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.5 2.5h13v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1zM0 1h16v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 0 12.5zm3.75 4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5M7 4.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0m1.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5" fill="#666"/></svg>
+</file>
+
+<file path="types/index.ts">
+export type ServiceId =
+  | "individual"
+  | "pareja"
+  | "familiar"
+  | "vocacional"
+  | "adolescentes"
+  | "organizacional"
+  | "talleres";
+
+export interface Service {
+  id: ServiceId;
+  title: string;
+  shortDesc: string;
+  fullDesc: string;
+  focus: string[];
+  targetAudience: string;
+  iconName: string;
+}
+
+export interface Therapist {
+  id: string;
+  name: string;
+  role: string;
+  specialty: string;
+  quote: string;
+  servicesOffered: ServiceId[];
+  avatarUrl: string;
+}
+
+export interface TimeSlot {
+  time: string; // ej: "09:00", "10:30"
+  isAvailable: boolean;
+}
+
+export interface DaySchedule {
+  date: string; // Formato AAAA-MM-DD
+  slots: TimeSlot[];
+}
+
+export interface BookingFormData {
+  serviceId: ServiceId;
+  modality: "presencial" | "virtual";
+  therapistId: string;
+  date: string;
+  timeSlot: string;
+  clientName: string;
+  clientPhone: string;
+  clientEmail: string;
+  consultationReason?: string;
+  consentAccepted: boolean;
+}
+
+export interface EventRSVP {
+  companyName: string;
+  representativeName: string;
+  jobTitle: string;
+  phone: string;
+  email: string;
+  attendeesCount: number;
+}
+</file>
+
+<file path=".gitignore">
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+</file>
+
+<file path="AGENTS.md">
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
+</file>
+
+<file path="CLAUDE.md">
+@AGENTS.md
+</file>
+
+<file path="eslint.config.mjs">
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
+</file>
+
+<file path="globals.css">
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-acherus: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-bumbbled: "Arial Rounded MT Bold", system-ui, sans-serif;
+}
+
+body {
+  background-color: #F7F7E8;
+  color: #2D2D2D;
+  font-family: var(--font-acherus);
+  overflow-x: hidden;
+}
+
+/* Clases auxiliares para componentes */
+.text-balance {
+  text-wrap: balance;
+}
+</file>
+
+<file path="next.config.ts">
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+};
+
+export default nextConfig;
+</file>
+
+<file path="postcss.config.mjs">
+const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+</file>
+
+<file path="README.md">
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+</file>
+
+<file path="tailwind.config.ts">
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        dp: {
+          purple: "#883F9B",     // Passionate Purple (Primario Institucional)
+          violaceous: "#BD93C6", // Fondos suaves / Hover
+          blue: "#2A8ED1",       // Ticino Blueous (Botones principales / CTA)
+          beige: "#F7F7E8",      // Pure Beige (Fondo neutro base)
+          camel: "#A56A2E",      // Camel / Mostaza (Acentos y destacados)
+          lavender: "#B2BFEB",   // Midsummer's Dream (Bordes y separadores)
+        },
+      },
+      fontFamily: {
+        sans: ["var(--font-acherus)", "system-ui", "sans-serif"],
+        display: ["var(--font-bumbbled)", "var(--font-acherus)", "sans-serif"],
+      },
+    },
+  },
+  plugins: [],
+};
+export default config;
+</file>
+
+<file path="tsconfig.json">
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}
+</file>
+
+<file path="app/layout.tsx">
+import type { Metadata } from "next";
+import "./globals.css";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
+export const metadata: Metadata = {
+  title: "Dulce Paz | Psicología y Salud Mental en La Paz, Bolivia",
+  description:
+    "Atención psicológica presencial y virtual, ética, humana y basada en evidencia. Terapia individual, parejas interculturales, familias y orientación vocacional.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="es">
+      <body className="flex flex-col min-h-screen">
+        <Navbar />
+        <main className="flex-grow">{children}</main>
+        <Footer />
+      </body>
+    </html>
+  );
+}
+</file>
+
+<file path="package.json">
+{
+  "name": "dulce-paz-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.9.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.47.0",
+    "next": "16.3.5",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-hook-form": "^7.88.0",
+    "tailwind-merge": "^3.7.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.5",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
+</file>
+
+</files>
