@@ -15,6 +15,7 @@ import {
   ArrowRight,
   QrCode,
 } from "lucide-react";
+import { api } from "@/lib/api";
 
 export default function RegistroEventoPage() {
   // Estado del formulario RSVP
@@ -28,6 +29,7 @@ export default function RegistroEventoPage() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [confirmedData, setConfirmedData] = useState<typeof formData | null>(null);
   const [passCode, setPassCode] = useState<string>("");
@@ -45,7 +47,7 @@ export default function RegistroEventoPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const newErrors: Record<string, string> = {};
@@ -72,12 +74,20 @@ export default function RegistroEventoPage() {
       return;
     }
 
-    // Generar código de pase VIP
-    const generatedPass = `CORP-DP-${Math.floor(1000 + Math.random() * 9000)}`;
-    setPassCode(generatedPass);
-    setConfirmedData({ ...formData });
-    setIsSubmitted(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setIsSubmitting(true);
+
+    try {
+      // Envío real al backend (FastAPI / Supabase / Resend)
+      const res = await api.submitEventRSVP(formData);
+      setPassCode(res.passCode);
+      setConfirmedData({ ...formData });
+      setIsSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err: any) {
+      setErrors({ general: "No se pudo procesar el registro. Intenta nuevamente." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {

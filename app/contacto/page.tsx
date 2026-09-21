@@ -17,6 +17,8 @@ import {
   ExternalLink,
 } from "lucide-react";
 
+import { api } from "@/lib/api";
+
 function ContactFormInner() {
   const searchParams = useSearchParams();
   const motivoParam = searchParams.get("motivo");
@@ -50,7 +52,7 @@ function ContactFormInner() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
 
@@ -61,8 +63,9 @@ function ContactFormInner() {
 
     setIsSubmitting(true);
 
-    // Simulación de envío al backend (FastAPI / Resend)
-    setTimeout(() => {
+    try {
+      // Envío real al backend (FastAPI / Resend)
+      await api.submitContact(formData);
       setIsSubmitting(false);
       setSubmitted(true);
       setFormData({
@@ -72,7 +75,10 @@ function ContactFormInner() {
         motivo: "Consulta general",
         mensaje: "",
       });
-    }, 800);
+    } catch (err: any) {
+      setIsSubmitting(false);
+      setErrorMsg("Hubo un problema al enviar tu mensaje. Por favor intenta de nuevo.");
+    }
   };
 
   return (

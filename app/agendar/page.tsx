@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useMemo, Suspense } from "react";
+import React, { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { api } from "@/lib/api";
 import {
   SERVICES_DATA,
   THERAPISTS_DATA,
@@ -88,9 +89,31 @@ function WizardContent() {
   const [consultationReason, setConsultationReason] = useState("");
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
 
   // Cita confirmada (Paso 5)
   const [bookingReference, setBookingReference] = useState<string>("");
+
+  // Slots dinámicos obtenidos del backend FastAPI
+  const [apiSlots, setApiSlots] = useState<{ time: string; isAvailable: boolean }[] | null>(null);
+
+  useEffect(() => {
+    if (!selectedDate) {
+      setApiSlots(null);
+      return;
+    }
+    let isMounted = true;
+    api.getAvailabilitySlots(selectedDate, selectedTherapistId)
+      .then((res) => {
+        if (isMounted && res && res.slots && res.slots.length > 0) {
+          setApiSlots(res.slots);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedDate, selectedTherapistId]);
 
   // Servicio seleccionado
   const selectedService: Service | undefined = useMemo(() => {
@@ -117,9 +140,11 @@ function WizardContent() {
     return THERAPISTS_DATA[0];
   }, [selectedTherapistId, availableTherapists]);
 
-  // Generador de slots horarios según fecha seleccionada
+  // Generador de slots horarios según fecha seleccionada (prioriza slots de la API)
   const dayScheduleSlots = useMemo(() => {
     if (!selectedDate) return [];
+    if (apiSlots && apiSlots.length > 0) return apiSlots;
+
     const found = MOCK_SCHEDULES.find((s) => s.date === selectedDate);
     if (found) return found.slots;
 
@@ -135,7 +160,7 @@ function WizardContent() {
       { time: "16:00", isAvailable: true },
       { time: "17:30", isAvailable: false },
     ];
-  }, [selectedDate]);
+  }, [selectedDate, apiSlots]);
 
   // Generación de días del mes en el calendario
   const calendarDays = useMemo(() => {
@@ -197,7 +222,7 @@ function WizardContent() {
   }, [calendarMonth]);
 
   // Validaciones antes de avanzar
-  const handleNextStep = () => {
+  const handleNextStep = async () => {
     if (currentStep === 1) {
       if (!selectedServiceId) {
         setErrors({ service: "Por favor, selecciona una especialidad clínica." });
@@ -249,14 +274,31 @@ function WizardContent() {
         return;
       }
 
-      // Generar código de reserva y pasar al paso 5
-      const randomCode = `DP-${new Date().getFullYear()}-${Math.floor(
-        1000 + Math.random() * 9000
-      )}`;
-      setBookingReference(randomCode);
-      setErrors({});
-      setCurrentStep(5);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setIsSubmittingBooking(true);
+      try {
+        // Envío real al backend (FastAPI / Supabase / Google Calendar / WhatsApp)
+        const bookingRes = await api.createBooking({
+          serviceId: selectedServiceId!,
+          modality,
+          therapistId: selectedTherapistId,
+          date: selectedDate,
+          timeSlot: selectedTimeSlot,
+          clientName,
+          clientPhone,
+          clientEmail,
+          consultationReason,
+          consentAccepted,
+        });
+
+        setBookingReference(bookingRes.bookingReference);
+        setErrors({});
+        setCurrentStep(5);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (err: any) {
+        setErrors({ general: err.message || "Error al procesar la cita. Por favor intenta nuevamente." });
+      } finally {
+        setIsSubmittingBooking(false);
+      }
     }
   };
 
