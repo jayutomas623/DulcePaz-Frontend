@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, Suspense } from "react";
+import React, { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -16,8 +16,10 @@ import {
   Users,
   CalendarCheck,
   Trash2,
+  RefreshCw,
 } from "lucide-react";
 import { THERAPISTS_DATA } from "@/lib/mock-data";
+import { api } from "@/lib/api";
 
 // Tipos para citas de la agenda clínica
 interface Appointment {
@@ -138,7 +140,7 @@ function AgendaContent() {
       ? tParam
       : "nikki-paz";
 
-  // Terapeuta activo en la sesión simulada
+  // Terapeuta activo en la sesión
   const [selectedTherapistState, setSelectedTherapistState] = useState<string | null>(null);
   const activeTherapistId = selectedTherapistState ?? defaultTherapist;
 
@@ -147,23 +149,85 @@ function AgendaContent() {
     return new Date().toISOString().split("T")[0];
   });
 
-  // Lista de citas y franjas bloqueadas en memoria
+  // Lista de citas y franjas bloqueadas sincronizadas con la API
   const [appointments, setAppointments] = useState<Appointment[]>(INITIAL_APPOINTMENTS);
-  const [blockedSlots, setBlockedSlots] = useState<BlockedSlot[]>([
-    {
-      id: "block-1",
-      therapistId: "nikki-paz",
-      time: "14:30",
-      date: new Date().toISOString().split("T")[0],
-      reason: "Supervisión Clínica y Reunión Institucional",
-    },
-  ]);
+  const [blockedSlots, setBlockedSlots] = useState<BlockedSlot[]>([]);
+  const [isLoadingApi, setIsLoadingApi] = useState<boolean>(false);
 
   // Modal para bloquear franja horaria
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
   const [slotToBlock, setSlotToBlock] = useState("12:00");
   const [blockReason, setBlockReason] = useState("Reunión institucional / Supervisión");
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+
+  // Detectar usuario autenticado desde localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const rawUser = localStorage.getItem("dulcepaz_user");
+      if (rawUser && !selectedTherapistState && !tParam) {
+        try {
+          const user = JSON.parse(rawUser);
+          if (user.email) {
+            if (user.email.includes("keila")) setSelectedTherapistState("keila-vilar");
+            else if (user.email.includes("william")) setSelectedTherapistState("william-mendoza");
+            else if (user.email.includes("nikki")) setSelectedTherapistState("nikki-paz");
+          }
+        } catch {}
+      }
+    }
+  }, [selectedTherapistState, tParam]);
+
+  // Cargar datos en vivo desde FastAPI backend
+  const fetchAgendaData = () => {
+    setIsLoadingApi(true);
+    Promise.all([
+      api.getAgenda(selectedDate, activeTherapistId).catch(() => null),
+      api.getBlockedSchedules(activeTherapistId, selectedDate).catch(() => []),
+    ]).then(([agendaRes, blockedRes]) => {
+      setIsLoadingApi(false);
+      if (agendaRes && agendaRes.appointments && agendaRes.appointments.length > 0) {
+        const mapped: Appointment[] = agendaRes.appointments.map((a) => {
+          let st: Appointment["status"] = "Confirmada";
+          if (a.status === "completed") st = "Completada";
+          else if (a.status === "cancelled_by_patient" || a.status === "cancelled") st = "Cancelada por Paciente";
+          else if (a.status === "no_show") st = "No asistió";
+
+          return {
+            id: a.id,
+            therapistId: a.therapistId,
+            time: a.time,
+            clientName: a.clientName,
+            clientPhone: a.clientPhone,
+            modality: (a.modality === "virtual" ? "virtual" : "presencial") as "presencial" | "virtual",
+            serviceName: a.serviceName,
+            consultationReason: a.consultationReason || "Consulta clínica programada",
+            status: st,
+            meetUrl: a.meetUrl,
+          };
+        });
+        setAppointments(mapped);
+      } else if (!agendaRes) {
+        // Fallback a citas iniciales filtradas
+        setAppointments(INITIAL_APPOINTMENTS);
+      }
+
+      if (blockedRes && Array.isArray(blockedRes)) {
+        setBlockedSlots(
+          blockedRes.map((b) => ({
+            id: b.id,
+            therapistId: b.therapistId,
+            time: b.timeSlot,
+            date: b.date,
+            reason: b.reason,
+          }))
+        );
+      }
+    });
+  };
+
+  useEffect(() => {
+    fetchAgendaData();
+  }, [selectedDate, activeTherapistId]);
 
   // Terapeuta actual
   const currentTherapist = useMemo(() => {
@@ -181,33 +245,67 @@ function AgendaContent() {
   // Franjas bloqueadas del terapeuta activo
   const filteredBlockedSlots = useMemo(() => {
     return blockedSlots.filter(
-      (b) => b.therapistId === activeTherapistId && b.date === selectedDate
+      (b) => b.therapistId === activeTherapistId && (!b.date || b.date === selectedDate)
     );
   }, [blockedSlots, activeTherapistId, selectedDate]);
 
-  // Cambiar estado de una cita
-  const handleUpdateStatus = (
+  // Cambiar estado de una cita (conectado a API PATCH /bookings/{id}/status)
+  const handleUpdateStatus = async (
     aptId: string,
     newStatus: Appointment["status"]
   ) => {
     setAppointments((prev) =>
       prev.map((apt) => (apt.id === aptId ? { ...apt, status: newStatus } : apt))
     );
+
+    let apiStatus = "confirmed";
+    if (newStatus === "Completada") apiStatus = "completed";
+    else if (newStatus === "Cancelada por Paciente") apiStatus = "cancelled_by_patient";
+    else if (newStatus === "No asistió") apiStatus = "no_show";
+
+    try {
+      await api.updateBookingStatus(aptId, apiStatus);
+      setFeedbackMessage(`Cita actualizada exitosamente a "${newStatus}".`);
+      setTimeout(() => setFeedbackMessage(null), 3000);
+    } catch (e) {
+      console.warn("Estado actualizado en modo local offline:", e);
+    }
   };
 
-  // Guardar bloqueo de horario
-  const handleConfirmBlock = (e: React.FormEvent) => {
+  // Guardar bloqueo de horario (conectado a API POST /blocked-schedules)
+  const handleConfirmBlock = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newBlock: BlockedSlot = {
-      id: `block-${Date.now()}`,
-      therapistId: activeTherapistId,
-      time: slotToBlock,
-      date: selectedDate,
-      reason: blockReason,
-    };
+    try {
+      const res = await api.createBlockedSchedule({
+        therapistId: activeTherapistId,
+        date: selectedDate,
+        timeSlot: slotToBlock,
+        reason: blockReason,
+      });
 
-    setBlockedSlots((prev) => [...prev, newBlock]);
+      setBlockedSlots((prev) => [
+        ...prev,
+        {
+          id: res.id,
+          therapistId: res.therapistId,
+          time: res.timeSlot,
+          date: res.date,
+          reason: res.reason,
+        },
+      ]);
+    } catch {
+      // Fallback local
+      const newBlock: BlockedSlot = {
+        id: `block-${Date.now()}`,
+        therapistId: activeTherapistId,
+        time: slotToBlock,
+        date: selectedDate,
+        reason: blockReason,
+      };
+      setBlockedSlots((prev) => [...prev, newBlock]);
+    }
+
     setIsBlockModalOpen(false);
     setFeedbackMessage(
       `Franja de las ${slotToBlock} bloqueada exitosamente. El horario ya no estará disponible en el agendador público.`
@@ -218,9 +316,16 @@ function AgendaContent() {
     }, 5000);
   };
 
-  // Desbloquear horario
-  const handleRemoveBlock = (blockId: string) => {
+  // Desbloquear horario (conectado a API DELETE /blocked-schedules/{id})
+  const handleRemoveBlock = async (blockId: string) => {
     setBlockedSlots((prev) => prev.filter((b) => b.id !== blockId));
+    try {
+      await api.deleteBlockedSchedule(blockId);
+      setFeedbackMessage("Franja horaria desbloqueada exitosamente.");
+      setTimeout(() => setFeedbackMessage(null), 3000);
+    } catch (e) {
+      console.warn("Desbloqueo procesado localmente:", e);
+    }
   };
 
   return (
@@ -332,6 +437,18 @@ function AgendaContent() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            {/* Botón Refrescar */}
+            <button
+              type="button"
+              onClick={fetchAgendaData}
+              disabled={isLoadingApi}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-[#B2BFEB] bg-white hover:bg-gray-50 text-gray-700 text-xs sm:text-sm font-semibold transition-all disabled:opacity-50"
+              title="Actualizar citas desde la API"
+            >
+              <RefreshCw className={`w-4 h-4 text-[#883F9B] ${isLoadingApi ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">Refrescar</span>
+            </button>
+
             {/* Botón Bloquear Franja */}
             <button
               type="button"

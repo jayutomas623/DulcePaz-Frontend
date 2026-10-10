@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   ArrowRight,
   QrCode,
+  Printer,
 } from "lucide-react";
 import { api } from "@/lib/api";
 
@@ -446,6 +447,35 @@ export default function RegistroEventoPage() {
                   <p>
                     <strong>Lugar:</strong> Edif. Parque, Calle 15 de Calacoto, La Paz
                   </p>
+                </div>
+
+                {/* Código QR Visual para Acreditación en Puerta */}
+                <div className="pt-3 border-t border-[#B2BFEB]/30 flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-[#B2BFEB]/40">
+                  <div className="flex items-center gap-3">
+                    <div className="w-16 h-16 bg-[#883F9B]/5 border-2 border-[#883F9B]/30 rounded-xl p-1.5 flex items-center justify-center shrink-0">
+                      <QrCode className="w-12 h-12 text-[#883F9B]" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
+                        Pase Personal &bull; Puerta
+                      </span>
+                      <span className="font-mono font-bold text-xs text-gray-900 block">
+                        {passCode}
+                      </span>
+                      <span className="text-[10px] text-emerald-600 font-semibold">
+                        Acreditación Válida
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-[11px] transition-colors"
+                  >
+                    <Printer className="w-3.5 h-3.5" />
+                    <span>Imprimir Pase</span>
+                  </button>
                 </div>
               </div>
             </div>

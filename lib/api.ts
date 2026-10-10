@@ -7,6 +7,20 @@
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+const DEFAULT_ADMIN_TOKEN = "dulcepaz_dev_secret_key";
+
+function getAdminAuthHeaders(): HeadersInit {
+  let token = DEFAULT_ADMIN_TOKEN;
+  if (typeof window !== "undefined") {
+    const storedToken = localStorage.getItem("dulcepaz_token");
+    if (storedToken) token = storedToken;
+  }
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+}
+
 // Interfaces de Contratos
 export interface ContactPayload {
   nombre: string;
@@ -95,6 +109,77 @@ export interface BookingResponse {
   created_at?: string;
 }
 
+export interface AdminBookingItem {
+  id: string;
+  bookingReference: string;
+  therapistId: string;
+  therapistName: string;
+  serviceId: string;
+  serviceName: string;
+  time: string;
+  date: string;
+  clientName: string;
+  clientPhone: string;
+  clientEmail: string;
+  modality: "presencial" | "virtual";
+  consultationReason?: string;
+  status: "confirmed" | "completed" | "cancelled_by_patient" | "no_show" | string;
+  meetUrl?: string;
+  adminNotes?: string;
+  createdAt?: string;
+}
+
+export interface AgendaResponse {
+  date?: string;
+  therapistId?: string;
+  total: number;
+  appointments: AdminBookingItem[];
+  user?: any;
+}
+
+export interface BlockedSchedule {
+  id: string;
+  therapistId: string;
+  date: string;
+  timeSlot: string;
+  reason: string;
+  createdAt?: string;
+}
+
+export interface EventRSVPAdminItem {
+  id: string;
+  passCode: string;
+  companyName: string;
+  representativeName: string;
+  jobTitle: string;
+  phone: string;
+  email: string;
+  attendeesCount: number;
+  status: "confirmed" | "checked_in" | "cancelled" | string;
+  registeredAt?: string;
+  checkedInAt?: string;
+}
+
+export interface EventRSVPAdminListResponse {
+  eventName: string;
+  eventDate: string;
+  totalCompanies: number;
+  totalAttendees: number;
+  checkedInCount: number;
+  rsvps: EventRSVPAdminItem[];
+}
+
+export interface ContactAdminItem {
+  id: string;
+  nombre: string;
+  email: string;
+  telefono?: string;
+  motivo: string;
+  mensaje: string;
+  status: "pending" | "attended" | string;
+  createdAt?: string;
+}
+
 class ApiClient {
   private baseUrl: string;
 
@@ -120,7 +205,6 @@ class ApiClient {
       return await res.json();
     } catch (error) {
       console.warn("Backend no disponible. Procesando en modo local seguro:", error);
-      // Fallback local seguro para cuando el backend está temporalmente apagado
       return {
         id: `local-contact-${Date.now()}`,
         nombre: data.nombre,
@@ -186,7 +270,6 @@ class ApiClient {
       return await res.json();
     } catch (error) {
       console.warn("Backend no disponible. Calculando disponibilidad con franjas estándar:", error);
-      // Validar si es domingo (sin atención)
       const dayOfWeek = new Date(dateStr + "T00:00:00").getDay();
       const standardSlots = ["09:00", "10:30", "14:30", "16:00", "17:30"];
       return {
@@ -244,6 +327,205 @@ class ApiClient {
         created_at: new Date().toISOString(),
       };
     }
+  }
+
+  // --------------------------------------------------------------------------
+  // ENDPOINTS DE ADMINISTRACIÓN CLÍNICA Y COORDINACIÓN (/admin/*)
+  // --------------------------------------------------------------------------
+
+  /**
+   * Consulta la agenda clínica (filtrada opcionalmente por fecha y especialista)
+   */
+  async getAgenda(date?: string, therapistId?: string): Promise<AgendaResponse> {
+    const params = new URLSearchParams();
+    if (date) params.append("date", date);
+    if (therapistId && therapistId !== "all") params.append("therapistId", therapistId);
+
+    const queryString = params.toString() ? `?${params.toString()}` : "";
+    const res = await fetch(`${this.baseUrl}/api/v1/admin/agenda${queryString}`, {
+      method: "GET",
+      headers: getAdminAuthHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Error consultando agenda: ${res.status}`);
+    }
+
+    return await res.json();
+  }
+
+  /**
+   * Actualiza el estado de una cita en la agenda
+   */
+  async updateBookingStatus(
+    bookingId: string,
+    status: string,
+    adminNotes?: string
+  ): Promise<any> {
+    const res = await fetch(`${this.baseUrl}/api/v1/admin/bookings/${bookingId}/status`, {
+      method: "PATCH",
+      headers: getAdminAuthHeaders(),
+      body: JSON.stringify({ status, adminNotes }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Error al actualizar cita: ${res.status}`);
+    }
+
+    return await res.json();
+  }
+
+  /**
+   * Obtiene los horarios bloqueados
+   */
+  async getBlockedSchedules(therapistId?: string, date?: string): Promise<BlockedSchedule[]> {
+    const params = new URLSearchParams();
+    if (therapistId && therapistId !== "all") params.append("therapistId", therapistId);
+    if (date) params.append("date", date);
+
+    const query = params.toString() ? `?${params.toString()}` : "";
+    const res = await fetch(`${this.baseUrl}/api/v1/admin/blocked-schedules${query}`, {
+      method: "GET",
+      headers: getAdminAuthHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Error consultando bloqueos: ${res.status}`);
+    }
+
+    return await res.json();
+  }
+
+  /**
+   * Registra un bloqueo manual de horario
+   */
+  async createBlockedSchedule(payload: {
+    therapistId: string;
+    date: string;
+    timeSlot: string;
+    reason?: string;
+  }): Promise<BlockedSchedule> {
+    const res = await fetch(`${this.baseUrl}/api/v1/admin/blocked-schedules`, {
+      method: "POST",
+      headers: getAdminAuthHeaders(),
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Error al bloquear horario: ${res.status}`);
+    }
+
+    return await res.json();
+  }
+
+  /**
+   * Elimina un bloqueo de horario
+   */
+  async deleteBlockedSchedule(blockId: string): Promise<any> {
+    const res = await fetch(`${this.baseUrl}/api/v1/admin/blocked-schedules/${blockId}`, {
+      method: "DELETE",
+      headers: getAdminAuthHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Error al eliminar bloqueo: ${res.status}`);
+    }
+
+    return await res.json();
+  }
+
+  /**
+   * Obtiene la lista consolidada de empresas e invitados al evento con métricas
+   */
+  async getEventRSVPs(): Promise<EventRSVPAdminListResponse> {
+    const res = await fetch(`${this.baseUrl}/api/v1/admin/events/rsvps`, {
+      method: "GET",
+      headers: getAdminAuthHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Error consultando asistentes al evento: ${res.status}`);
+    }
+
+    return await res.json();
+  }
+
+  /**
+   * Valida y acredita el ingreso presencial de un invitado por código de pase o lectura QR
+   */
+  async checkInAttendee(passCode: string): Promise<{ status: string; message: string; rsvp: EventRSVPAdminItem }> {
+    const res = await fetch(`${this.baseUrl}/api/v1/admin/events/check-in`, {
+      method: "POST",
+      headers: getAdminAuthHeaders(),
+      body: JSON.stringify({ passCode }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Error al validar pase QR: ${res.status}`);
+    }
+
+    return await res.json();
+  }
+
+  /**
+   * Registra una invitación corporativa directamente desde el panel de coordinación
+   */
+  async createEventRSVPAdmin(data: {
+    companyName: string;
+    representativeName: string;
+    jobTitle: string;
+    phone: string;
+    email: string;
+    attendeesCount: number;
+  }): Promise<EventRSVPAdminItem> {
+    const res = await fetch(`${this.baseUrl}/api/v1/admin/events/rsvps`, {
+      method: "POST",
+      headers: getAdminAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `Error al crear invitación: ${res.status}`);
+    }
+
+    return await res.json();
+  }
+
+  /**
+   * Obtiene los mensajes del formulario de contacto institucional
+   */
+  async getContacts(): Promise<ContactAdminItem[]> {
+    const res = await fetch(`${this.baseUrl}/api/v1/admin/contacts`, {
+      method: "GET",
+      headers: getAdminAuthHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Error consultando contactos: ${res.status}`);
+    }
+
+    return await res.json();
+  }
+
+  /**
+   * Actualiza el estado de una consulta de contacto ('pending' o 'attended')
+   */
+  async updateContactStatus(contactId: string, status: string): Promise<any> {
+    const res = await fetch(`${this.baseUrl}/api/v1/admin/contacts/${contactId}/status`, {
+      method: "PATCH",
+      headers: getAdminAuthHeaders(),
+      body: JSON.stringify({ status }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Error al actualizar estado del contacto: ${res.status}`);
+    }
+
+    return await res.json();
   }
 }
 

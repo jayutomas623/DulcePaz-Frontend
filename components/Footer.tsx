@@ -90,9 +90,12 @@ export default function Footer() {
         {/* Barra inferior */}
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-[#F7F7E8]/60 gap-4">
           <p>© 2026 Dulce Paz - Psicología y Salud Mental. Todos los derechos reservados.</p>
-          <div className="flex gap-6">
+          <div className="flex flex-wrap gap-6 items-center">
             <Link href="/privacidad" className="hover:underline">Políticas de Privacidad</Link>
             <Link href="/terminos" className="hover:underline">Términos del Servicio</Link>
+            <Link href="/admin/login" className="hover:underline text-[#F7F7E8]/80 hover:text-white flex items-center gap-1 font-semibold">
+              <span>Portal Profesional &bull; PWA</span>
+            </Link>
           </div>
         </div>
       </div>

@@ -358,25 +358,25 @@ export default function HomePage() {
             <div className="lg:col-span-8 space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-[#F7F7E8] text-xs font-semibold uppercase tracking-wider">
                 <CalendarDays className="w-3.5 h-3.5" />
-                <span>Próximo Espacio de Escucha Comunitario</span>
+                <span>Próximo Encuentro Institucional &bull; Código QR</span>
               </div>
 
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
-                «No eres mi mundo, sino parte de él»
+                Salud Mental en las Organizaciones
               </h2>
 
               <p className="text-[#F7F7E8]/90 text-sm sm:text-base leading-relaxed max-w-2xl">
-                Un encuentro grupal cálido y reflexivo para dialogar sobre la dependencia emocional, la autonomía afectiva y las formas de construir vínculos sanos sin perder nuestra propia individualidad.
+                Un desayuno de trabajo exclusivo para líderes directivos y de talento humano. Espacio de diálogo estratégico sobre bienestar laboral, prevención de burnout y diagnóstico organizacional ético.
               </p>
 
               <div className="flex flex-wrap items-center gap-6 pt-2 text-sm text-[#F7F7E8]/85">
                 <span className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-[#BD93C6]" />
-                  26 de septiembre de 2026
+                  Viernes, 23 de octubre de 2026
                 </span>
                 <span className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-[#BD93C6]" />
-                  18:30 - 20:30 (GMT-4)
+                  10:00 - 12:00 (GMT-4)
                 </span>
                 <span className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-[#BD93C6]" />
